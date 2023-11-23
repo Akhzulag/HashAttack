@@ -1,9 +1,9 @@
 import hashlib
-from scipy.stats import uniform, t,norm
-
+from scipy.stats import uniform, t,norm,randint
+import matplotlib.pyplot as plt
 import numpy as np
 from statistics import stdev, mean
-
+import random
 def sha224_hash(data):
 
     sha224 = hashlib.sha224()
@@ -28,7 +28,9 @@ def first_type_prototype(data_to_hash):
         # print(f"Original data: {data_to_hash + str(i)}")
         # print(f"SHA-224 Hash: {hashed_data}")
         if hashed_data[52:] == originalHASH:
+
             print("PEREMOHA")
+            print(data_to_hash +"   "+ str(i))
             print("ORIGINAL HASH", originalHASH)
             print(f"Original data: {data_to_hash}")
             print(f"SHA-224 Hash: {hashed_data}")
@@ -55,13 +57,12 @@ def random_char():
     return chr(randon_number(33,127))
 
 def change_str(st):
-    c = random_char()
-    position = randon_number(0,len(st))
-    st_list = list(st)
+    ask = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+    index_to_change = randint.rvs(0, len(st),size=1)[0]
 
-    st_list[position] = c
+    new_char = random.choice(ask)
 
-    return ''.join(st_list)
+    return st[:index_to_change] + new_char + st[index_to_change + 1:]
 
 def second_type_prototype(data_to_hash):
     originalHASH = sha224_hash(data_to_hash)[52:]
@@ -71,7 +72,7 @@ def second_type_prototype(data_to_hash):
     while True:
         st = change_str(st)
         hashed_data = sha224_hash(st)
-        print(st)
+        #print(st)
         if hashed_data[52:] == originalHASH:
             print("PEREMOHA")
             print("ORIGINAL HASH", originalHASH)
@@ -81,7 +82,7 @@ def second_type_prototype(data_to_hash):
             print(f"SHA-224 Hash: {hashed_data}")
             break
         i += 1
-
+    return i
 def first_type_birth(data_to_hash):
     dict = {}
     i = 0
@@ -93,11 +94,9 @@ def first_type_birth(data_to_hash):
             print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[48:]}")
             break
         else:
-            print(hashed_data[48:])
             dict[hashed_data[48:]] = data_to_hash + str(i)
-        print(i)
         i += 1
-
+    return i
 def second_type_birth(data_to_hash):
     dict = {}
     i = 0
@@ -111,11 +110,9 @@ def second_type_birth(data_to_hash):
             print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[48:]}")
             break
         else:
-            print(hashed_data[48:])
             dict[hashed_data[48:]] = st
-        print(i)
         i += 1
-
+    return i
 # Приклад використання
 data_to_hash = "Burzhymskiy Rostyslav"
 hashed_data = sha224_hash(data_to_hash)
@@ -128,23 +125,41 @@ print(data_to_hash, hashed_data)
 
 #second_type_birth(data_to_hash)
 
-# def random_string(size):
-#     st = ""
-#     randNum = uniform(loc=33, scale=127 - 33)
-#     p = randNum.rvs(size)
-#     for i in range(size):
-#         st += chr(int(p[i]))
-#     return st
-#
-#
-# X = []
-# for i in range(10000):
-#     print(i)
-#     st = random_string(10)
-#     X.append(first_type_prototype(st))
-#
-# def sem(data):
-#     return stdev(data) / np.sqrt(len(data))
-#
-# print(sem(X))
-# print(t.interval(1-0.1, df=len(X)-1, loc=mean(X), scale=sem(X)))
+def random_string(size):
+    st = ""
+    randNum = uniform(loc=33, scale=127 - 33)
+    p = randNum.rvs(size)
+    for i in range(size):
+        st += chr(int(p[i]))
+    return st
+
+
+
+
+def sem(data):
+    return stdev(data) / np.sqrt(len(data))
+
+
+def build_interval_plot(f):
+    X = []
+    for i in range(100):
+        print(i)
+       # lenST = randint.rvs(13,100,size=1)[0]
+        st = random_string(20)
+        X.append(f(st))
+
+    print(X)
+    for i in range(100):
+        print(i+1, '&', X[i])
+    print(stdev(X))
+    print(f"{norm.interval(1-0.5, loc=mean(X), scale=sem(X))}")
+    plt.bar(range(len(X)), X, label='Зміна значень у списку X')
+    plt.xlabel('Крок')
+    plt.ylabel('Значення')
+    plt.title('Зміна значень у списку X на 100 кроків')
+    plt.legend()
+    plt.show()
+
+build_interval_plot(first_type_prototype)
+
+#(87532.20134958814, 93896.25865041185)

@@ -1,6 +1,8 @@
 import hashlib
-from scipy.stats import uniform, t,norm
-
+from scipy.stats import uniform, t,norm, randint
+import keyboard
+import cProfile
+import random
 import numpy as np
 from statistics import stdev, mean
 
@@ -26,7 +28,7 @@ def first_type_prototype(data_to_hash):
         hashed_data = sha224_hash(data_to_hash + str(i))
 
         print("\\\\"+f"Повідомлення: {data_to_hash + str(i)}"+"\\\\")
-        print(f"Геш значення: {hashed_data[:51]}"+"\\textcolor{red}" +'{'+f"{hashed_data[52:]}"+'}'+"\\\\")
+        print(f"Геш значення: {hashed_data[:52]}"+"\\textcolor{red}" +'{'+f"{hashed_data[52:]}"+'}'+"\\\\")
         if hashed_data[52:] == originalHASH:
             print("PEREMOHA")
             print("ORIGINAL HASH", originalHASH)
@@ -45,14 +47,15 @@ def randon_number(begin, end):
 def random_char():
     return chr(randon_number(33,127))
 
+
 def change_str(st):
-    c = random_char()
-    position = randon_number(0,len(st))
-    st_list = list(st)
+    ask = " !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+    index_to_change = randint.rvs(0, len(st),size=1)[0]
 
-    st_list[position] = c
+    new_char = random.choice(ask)
 
-    return ''.join(st_list)
+    return st[:index_to_change] + new_char + st[index_to_change + 1:]
+
 
 def second_type_prototype(data_to_hash):
     originalHASH = sha224_hash(data_to_hash)[52:]
@@ -62,7 +65,10 @@ def second_type_prototype(data_to_hash):
     while True:
         st = change_str(st)
         hashed_data = sha224_hash(st)
-        print(st)
+        print("\\\\" + f"Повідомлення {i}: {st}" + "\\\\")
+        print(f"Геш значення: {hashed_data[:52]}" + "\\textcolor{red}" + '{' + f"{hashed_data[52:]}" + '}' + "\\\\")
+        if i == 30:
+            user_input = input("Введіть щось: ")
         if hashed_data[52:] == originalHASH:
             print("PEREMOHA")
             print("ORIGINAL HASH", originalHASH)
@@ -78,44 +84,69 @@ def first_type_birth(data_to_hash):
     i = 0
     while True:
         hashed_data = sha224_hash(data_to_hash + str(i))
+        print("\\\\" + f"Повідомлення: {data_to_hash + str(i)}" + "\\\\")
+        print(f"Геш значення: {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
+        if i == 30:
+            user_input = input("Введіть щось: ")
         if hashed_data[48:] in dict:
             print("PEREMOHA. collision was found")
-            print(f"X1 {data_to_hash + str(i)} => h(X1) = {hashed_data[48:]}")
-            print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[48:]}")
+            print(f"X1 {data_to_hash + str(i)} => h(X1) = {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
+            hashed_data = sha224_hash(dict[hashed_data[48:]])
+            print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
             break
         else:
-            print(hashed_data[48:])
             dict[hashed_data[48:]] = data_to_hash + str(i)
-        print(i)
+
         i += 1
 
 def second_type_birth(data_to_hash):
     dict = {}
     i = 0
     st = data_to_hash
-    while True:
-        st = change_str(st)
-        hashed_data = sha224_hash(st)
-        if hashed_data[48:] in dict and dict[hashed_data[48:]] != st:
-            print("PEREMOHA. collision was found")
-            print(f"X1 {st} => h(X1) = {hashed_data[48:]}")
-            print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[48:]}")
-            break
-        else:
-            print(hashed_data[48:])
-            dict[hashed_data[48:]] = st
-        print(i)
-        i += 1
+    with open("out.txt", 'w') as output_file:
+        while True:
+            st = change_str(st)
+            hashed_data = sha224_hash(st)
+            print("\\\\" + f"Повідомлення {i}: {st}" + "\\\\")
+            print(f"Геш значення: {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
+
+            output_file.write("\\\\" + f"Повідомлення {i}: {st}" + "\\\\\n")
+            output_file.write(f"Геш значення: {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\\n")
+
+            if i == 30:
+                user_input = input("Введіть щось: ")
+            if hashed_data[48:] in dict:
+                if dict[hashed_data[48:]] == st:
+                    continue
+                print("PEREMOHA. collision was found")
+                print(f"X1 {st} => h(X1) = {hashed_data[48:]}")
+                print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[48:]}")
+                print(f"X1 {st} => h(X1) = {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
+                hashed_data = sha224_hash(dict[hashed_data[48:]])
+                print(f"X2 {dict[hashed_data[48:]]} => h(X2) = {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
+
+                break
+            else:
+
+                dict[hashed_data[48:]] = st
+            i += 1
 
 # Приклад використання
 data_to_hash = "Burzhymskiy Rostyslav"
 hashed_data = sha224_hash(data_to_hash)
 print(data_to_hash, hashed_data)
+print(change_str(data_to_hash))
+print(change_str(data_to_hash))
+print(change_str(data_to_hash))
+print(change_str(data_to_hash))
+print(change_str(data_to_hash))
 
+#cProfile.run('second_type_birth(data_to_hash)', sort='cumulative')
+
+#first_type_birth(data_to_hash)
+second_type_birth(data_to_hash)
+#first_type_prototype(data_to_hash)
 #second_type_prototype(data_to_hash)
-
-
-first_type_prototype(data_to_hash)
 
 #second_type_birth(data_to_hash)
 
