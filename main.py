@@ -114,7 +114,7 @@ def second_type_birth(data_to_hash):
         i += 1
     return i
 # Приклад використання
-data_to_hash = "Burzhymskiy Rostyslav"
+data_to_hash = "BurzhymskiyRostyslavVolodymyrovych"
 hashed_data = sha224_hash(data_to_hash)
 print(data_to_hash, hashed_data)
 
@@ -140,18 +140,29 @@ def sem(data):
     return stdev(data) / np.sqrt(len(data))
 
 
-def build_interval_plot(f):
+def S(X):
+    x_av = np.array(X).mean()
+    sum = 0
+    for i in X:
+        sum += (i-x_av)**2
+    return sum/len(X)
+
+def build_interval_plot(f,  st ):
     X = []
-    for i in range(100):
+
+    for i in range(200):
         print(i)
        # lenST = randint.rvs(13,100,size=1)[0]
-        st = random_string(20)
+        st = change_str(st)
+        #st = random_string(20)
+        print(st)
         X.append(f(st))
 
     print(X)
-    for i in range(100):
-        print(i+1, '&', X[i])
-    print(stdev(X))
+    for i in range(40):
+        print(i, '&', X[i], "& &",i+40,"&",X[40+i],"& &",i+80,"&",X[80+i],"& &",i+120,"&",X[120+i],"& &",i+160,"&",X[160+i],"\\\\")
+    print("Вибіркове середнє: ", np.array(X).mean())
+    print("Стандартне відхлення: ",stdev(X))
     print(f"{norm.interval(1-0.5, loc=mean(X), scale=sem(X))}")
     plt.bar(range(len(X)), X, label='Зміна значень у списку X')
     plt.xlabel('Крок')
@@ -160,6 +171,13 @@ def build_interval_plot(f):
     plt.legend()
     plt.show()
 
-build_interval_plot(first_type_prototype)
+print("First type Prototype")
+build_interval_plot(first_type_prototype, "BurzhymskiyRostyslavVolodymyrovych")
+print("Second type Prototype")
+build_interval_plot(second_type_birth,  "BurzhymskiyRostyslavVolodymyrovych")
+print("First type Birthday")
+build_interval_plot(first_type_birth, "2002BurzhymskiyRostyslavVolodymyrovych2002")
+print("Second type Birthday")
+build_interval_plot(second_type_birth,"2002BurzhymskiyRostyslavVolodymyrovych2002")
 
 #(87532.20134958814, 93896.25865041185)

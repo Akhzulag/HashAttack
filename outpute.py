@@ -26,7 +26,8 @@ def first_type_prototype(data_to_hash):
     i = 0
     while True:
         hashed_data = sha224_hash(data_to_hash + str(i))
-
+        if i == 30:
+            user_input = input("Введіть щось: ")
         print("\\\\"+f"Повідомлення: {data_to_hash + str(i)}"+"\\\\")
         print(f"Геш значення: {hashed_data[:52]}"+"\\textcolor{red}" +'{'+f"{hashed_data[52:]}"+'}'+"\\\\")
         if hashed_data[52:] == originalHASH:
@@ -84,7 +85,7 @@ def first_type_birth(data_to_hash):
     i = 0
     while True:
         hashed_data = sha224_hash(data_to_hash + str(i))
-        print("\\\\" + f"Повідомлення: {data_to_hash + str(i)}" + "\\\\")
+        print("\\\\" + f"Повідомлення {i}: {data_to_hash + str(i)}" + "\\\\")
         print(f"Геш значення: {hashed_data[:48]}" + "\\textcolor{red}" + '{' + f"{hashed_data[48:]}" + '}' + "\\\\")
         if i == 30:
             user_input = input("Введіть щось: ")
@@ -132,21 +133,14 @@ def second_type_birth(data_to_hash):
             i += 1
 
 # Приклад використання
-data_to_hash = "Burzhymskiy Rostyslav"
+data_to_hash = "2002BurzhymskiyRostyslavVolodymyrovych2002"
 hashed_data = sha224_hash(data_to_hash)
 print(data_to_hash, hashed_data)
-print(change_str(data_to_hash))
-print(change_str(data_to_hash))
-print(change_str(data_to_hash))
-print(change_str(data_to_hash))
-print(change_str(data_to_hash))
-
-#cProfile.run('second_type_birth(data_to_hash)', sort='cumulative')
-
-#first_type_birth(data_to_hash)
-second_type_birth(data_to_hash)
 #first_type_prototype(data_to_hash)
 #second_type_prototype(data_to_hash)
+#first_type_birth(data_to_hash)
+second_type_birth(data_to_hash)
+
 
 #second_type_birth(data_to_hash)
 
